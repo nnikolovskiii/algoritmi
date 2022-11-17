@@ -1,0 +1,143 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+
+public class PostFixEvaluation {
+
+    public static void main(String[] args) throws Exception{
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        String expression = br.readLine();
+        char exp[] = expression.toCharArray();
+
+        System.out.println(postFixMethod(exp));
+
+        br.close();
+
+
+    }
+
+    private static int postFixMethod(char[] e) {
+        ArrayStack<Integer> ints = new ArrayStack<>(100);
+        int n=0;
+        char [] exp = new char[e.length+1];
+        System.arraycopy(e, 0, exp, 0, e.length);
+        exp[e.length] = ' ';
+
+        for(int i=0; i<e.length; i++){
+            Character c1 = exp[i];
+            Character c2 = exp[i+1];
+
+            if(Character.isDigit(c1)&&Character.isDigit(c2)){
+                n = n*10 + Character.getNumericValue(c1);
+            }
+
+            if(Character.isDigit(c1)&&!Character.isDigit(c2)){
+                n = n*10 + Character.getNumericValue(c1);
+                ints.push(n);
+                n=0;
+            }
+
+            if(isOperation(c1)){
+                int num1 = ints.pop();
+                int num2 = ints.pop();
+                ints.push(performOperationd(c1, num1, num2));
+            }
+        }
+        return ints.pop();
+    }
+
+    private static boolean isOperation(Character c1) {
+        return c1=='+'|| c1=='-' || c1=='*'||c1=='/';
+    }
+
+    private static Integer performOperationd(Character c1, int num1, int num2) {
+        if(c1=='+')
+            return num1 + num2;
+        else if(c1=='*')
+            return num1 * num2;
+        else if(c1=='/')
+            return num2/num1;
+        else
+            return num2 - num1;
+    }
+
+ static class ArrayStack<E> implements Stack<E> {
+
+        // Stekot e pretstaven na sledniot nacin:
+        //depth e dlabochinata na stekot, a
+        // elems[0...depth-1] se negovite elementi.
+        private E[] elems;
+        private int depth;
+
+        @SuppressWarnings("unchecked")
+        public ArrayStack(int maxDepth) {
+            // Konstrukcija na nov, prazen stek.
+            elems = (E[]) new Object[maxDepth];
+            depth = 0;
+        }
+
+
+        public boolean isEmpty () {
+            // Vrakja true ako i samo ako stekot e prazen.
+            return (depth == 0);
+        }
+
+
+        public E peek () {
+            // Go vrakja elementot na vrvot od stekot.
+            if (depth == 0)
+                throw new NoSuchElementException();
+            return elems[depth-1];
+        }
+
+
+        public void clear () {
+            // Go prazni stekot.
+            for (int i = 0; i < depth; i++)  elems[i] = null;
+            depth = 0;
+        }
+
+
+        public void push (E x) {
+            // Go dodava x na vrvot na stekot.
+            elems[depth++] = x;
+        }
+
+
+        public E pop () {
+            // Go otstranuva i vrakja elementot shto e na vrvot na stekot.
+            if (depth == 0)
+                throw new NoSuchElementException();
+            E topmost = elems[--depth];
+            elems[depth] = null;
+            return topmost;
+        }
+    }
+
+   static interface Stack<E> {
+
+        // Elementi na stekot se objekti od proizvolen tip.
+
+        // Metodi za pristap:
+
+        public boolean isEmpty ();
+            // Vrakja true ako i samo ako stekot e prazen.
+
+        public E peek ();
+            // Go vrakja elementot na vrvot od stekot.
+
+        // Metodi za transformacija:
+
+        public void clear ();
+            // Go prazni stekot.
+
+        public void push (E x);
+            // Go dodava x na vrvot na stekot.
+
+        public E pop ();
+            // Go otstranuva i vrakja elementot shto e na vrvot na stekot.
+    }
+}

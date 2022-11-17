@@ -1,0 +1,157 @@
+#include<stdio.h>
+#include<malloc.h>
+#include<string.h>
+#define MEMCHECK(x) if(x==NULL) { printf("Nema memorija!\n"); exit(-1); }
+
+typedef char* info_t;
+
+typedef struct element {
+    info_t info;
+    struct element *parent;
+    struct element *sibling;
+    struct element *firstChild;
+} node;
+
+typedef struct tree_element {
+    node *root;
+} tree;
+
+void initialize(tree *t) {
+    t->root = NULL;
+}
+
+node* parent(node *n) {
+    return n->parent;
+}
+
+int childCount(node *n) {
+    node *tmp = n->firstChild;
+    int num = 0;
+    while (tmp != NULL) {
+        tmp = tmp->sibling;
+        num++;
+    }
+    return num;
+}
+
+void makeRoot(info_t elem, tree *t) {
+    t->root = (node *)malloc(sizeof(node));
+    t->root->info = elem;
+    t->root->parent = NULL;
+    t->root->sibling = NULL;
+    t->root->firstChild = NULL;
+}
+
+node* addChild(node *n, info_t elem) {
+    node *tmp = (node *)malloc(sizeof(node));
+    tmp->info = elem;
+    tmp->parent = n;
+    tmp->firstChild = NULL;
+    tmp->sibling = n->firstChild;
+    n->firstChild = tmp;
+    return tmp;
+}
+
+void deleteRecursively(node *n) {
+    node *tmp, *next;
+    for (tmp=n->firstChild;tmp!=NULL;) {
+        next = tmp->sibling;
+        deleteRecursively(tmp);
+        tmp = next;
+    }
+    free(n);
+}
+
+void removeNode(node *n, tree *t) {
+    node *tmp;
+
+    if (n->parent != NULL) {
+        if (n->parent->firstChild == n) {
+            // n e prvo dete na tatkoto
+            n->parent->firstChild = n->sibling;
+        } else {
+            // go barame "prethodnikot" na n
+            tmp = n->parent->firstChild;
+            while (tmp->sibling != n)
+                tmp = tmp->sibling;
+            tmp->sibling = n->sibling;
+        }
+    } else {
+        // jazelot n e  korenot na drvoto
+        t->root = NULL;
+    }
+
+    deleteRecursively(n);
+}
+
+void printTreeRecursive(node *n, int level) {
+    if (n == NULL)
+        return;
+    int i;
+    node *tmp;
+
+    for (i=0;i<level;i++)
+        printf(" ");
+    printf("%s\n", n->info);
+    tmp = n->firstChild;
+
+    while (tmp != NULL) {
+        printTreeRecursive(tmp, level+1);
+        tmp = tmp->sibling;
+    }
+}
+
+void printTree(tree *t) {
+    printTreeRecursive(t->root, 0);
+}
+
+int max(int a, int b) {
+    if (a > b)
+        return a;
+    return b;
+}
+
+int countMaxChildrenRecursive(node *n) {
+    int p = childCount(n);
+    node *tmp = n->firstChild;
+    while (tmp != NULL) {
+        p = max(p, countMaxChildrenRecursive(tmp));
+        tmp = tmp->sibling;
+    }
+    return p;
+}
+
+int countMaxChildren(tree *t) {
+    return countMaxChildrenRecursive(t->root);
+}
+
+int main() {
+    int i,j,k;
+
+	tree *t = (tree *)malloc(sizeof(tree));
+	makeRoot("c:", t);
+
+    char commands[1000][100];
+    int N;
+    char letter;
+
+    scanf("%d\n", &N);
+
+    for (i=0;i<N;i++) {
+        // we read the line
+        for (j=0;;j++) {
+            scanf("%c", &letter);
+            if (letter != '\n')
+                commands[i][j] = letter;
+            else
+                break;
+        }
+        commands[i][j] = '\0';
+    }
+
+    makeRoot("c:", t);
+
+    // vasiot kod ovde
+
+    return 0;
+}

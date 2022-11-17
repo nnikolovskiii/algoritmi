@@ -1,0 +1,171 @@
+import java.util.Scanner;
+
+public class ZadacaMaraton {
+    public static void main(String[] args) {
+        Scanner input=new Scanner(System.in);
+        int n=input.nextInt();
+        Atleticar[] atleticari = new Atleticar[n];
+
+        String ime;
+        String pol;
+        int vozrast;
+        double vreme;
+        String zemja;
+
+        input.nextLine();
+
+        for(int i=0;i<n;i++)
+        {
+            ime = input.nextLine();
+            pol = input.nextLine();
+            vozrast = input.nextInt();
+            vreme = input.nextDouble();
+            input.nextLine();
+            zemja = input.nextLine();
+            atleticari[i]=new Atleticar(ime,pol,vreme,vozrast,zemja);
+        }
+
+        String mesto;
+        int godina;
+        String zemjaP;
+        mesto = input.nextLine();
+        godina = input.nextInt();
+        input.nextLine();
+
+        Marathon m1 = new Marathon(mesto, godina, atleticari);
+        System.out.print(m1.toString());
+
+        zemjaP = input.nextLine();
+        System.out.println("Prvo mesto: " + m1.najdobroVreme().toString());
+        System.out.println("Ima vkupno " + m1.atleticariOd(zemjaP) + " atleticar/i od " + zemjaP);
+    }
+}
+
+interface IMarathon {
+    Atleticar najdobroVreme();
+    int atleticariOd(String s);
+}
+
+class Atleticar implements Comparable<Atleticar>{
+    private String name;
+    private String gender;
+    private double time;
+    private int age;
+    private String nationality;
+
+    public Atleticar(String name, String gender, double time, int age, String nationality) {
+        this.name = name;
+        this.gender = gender;
+        this.time = time;
+        this.age = age;
+        this.nationality = nationality;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public double getTime() {
+        return time;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
+    //формат: име / возраст / земја на потекло / време на истрчување (сите параметри одделени со празно место)
+
+    @Override
+    public String toString() {
+        return String.format("%s\n%d\n%s\n%.1f\n", name, age, nationality, time);
+    }
+
+
+    @Override
+    public int compareTo(Atleticar o) {
+        if(this.time > o.time) return 1;
+        else if (this.time < o.time) return -1;
+
+        return  0;
+    }
+}
+
+class Marathon implements IMarathon{
+    private String location;
+    private int year;
+    private Atleticar[] atleticari;
+
+    public Marathon(String location, int year, Atleticar[] atleticari) {
+        this.location = location;
+        this.year = year;
+        this.atleticari = atleticari;
+    }
+
+    public Marathon(){
+        location = null;
+        year = 0;
+        atleticari = new Atleticar[10];
+    }
+
+    @Override
+    public Atleticar najdobroVreme() {
+        Atleticar bestTimeAthlete = null;
+        bestTimeAthlete = atleticari[0];
+        for (int i = 1; i < atleticari.length; i++) {
+            if(atleticari[i].compareTo(bestTimeAthlete) < 0){
+                bestTimeAthlete = atleticari[i];
+            }
+        }
+
+        return bestTimeAthlete;
+    }
+
+    @Override
+    public int atleticariOd(String s) {
+        int num = 0;
+        for (Atleticar a : atleticari
+             ) {
+            if(a.getNationality().equals(s))
+                num++;
+        }
+        return num;
+    }
+    //место на одржување / година / атлетичарите учесници на маратонот (сите параметри одделени со нов ред)
+
+    @Override
+    public String toString() {
+        String mess = String.format("%s\n%d\n", location, year);
+        for (Atleticar a: atleticari) {
+            mess += a.toString();
+        }
+        return mess;
+    }
+}

@@ -1,0 +1,86 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+public class Array <E>{
+    private E[] data;
+    private int size;
+    private int capacity;
+    private static int PREDEFINED_ARRAY_CAPACITY = 2;
+
+    public Array(){
+        capacity = PREDEFINED_ARRAY_CAPACITY;
+        data = (E[]) new Object[capacity];
+        size = 0;
+    }
+
+    public Array(int size){
+        this.capacity = size;
+        this.size = 0;
+        data = (E[]) new Object[capacity];
+    }
+
+    public E getElement(int index){
+        return data[index];
+    }
+
+    public void addElement(E element){
+        if(size==capacity){
+            capacity*=2;
+            E [] tmp = (E[]) new Object[capacity];
+            for (int i = 0; i < size; i++) tmp[i] = data[i];
+            data = tmp;
+        }
+        data[size++] = element;
+    }
+
+    public void printArray(){
+        Arrays.stream(data, 0, size)
+                .forEach(System.out::println);
+
+    }
+
+    public int getSize(){
+        return size;
+    }
+
+    public static int brojDoProsek( Array<Integer> array){
+        //Vashiot kod tuka..
+        double avg = 0;
+        for (int i = 0; i < array.getSize(); i++) {
+            avg+=array.getElement(i);
+        }
+        avg = avg/ array.size;
+        int closestNumToAvg = array.getElement(0);
+        for (int i = 0; i < array.getSize(); i++) {
+            if((Math.abs(avg-closestNumToAvg)) == (Math.abs(avg- array.getElement(i)))){
+                if(closestNumToAvg>array.getElement(i)){
+                    closestNumToAvg=array.getElement(i);
+                }
+            }else if((Math.abs(avg-closestNumToAvg)) > (Math.abs(avg- array.getElement(i)))){
+                closestNumToAvg = array.getElement(i);
+            }
+        }
+        return closestNumToAvg;
+    }
+
+    public static void main(String[] args) throws IOException {
+        int n;
+        BufferedReader stdin = new BufferedReader( new InputStreamReader(System.in));
+        String s = stdin.readLine();
+        int N = Integer.parseInt(s);
+        Array<Integer> array = new Array<>(N);
+        int i=0;
+        //Vashiot kod tuka...
+        while(i<N){
+            s = stdin.readLine();
+            n = Integer.parseInt(s);
+            array.addElement(n);
+            i++;
+        }
+        System.out.println(Array.brojDoProsek(array));
+    }
+
+}

@@ -1,0 +1,50 @@
+//package aips_labs_6;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+public class RoutingHashJava {
+    public static void main(String[] args) throws IOException {
+        ArrayList<String> rt;
+        //File file = new File("D:\\FINKI\\hashmaps\\src\\aips_labs_6\\routing");
+        Map<String, ArrayList<String>> hashMap = new HashMap<>(28);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(br.readLine());
+        for (int i = 0; i < n; i++) {
+            rt = new ArrayList<>();
+            String ip = br.readLine();
+            String routingTable = br.readLine();
+            String [] parts = routingTable.split(",");
+            Collections.addAll(rt, parts);
+            hashMap.put(ip, rt);
+        }
+
+        boolean postoi = false;
+        n = Integer.parseInt(br.readLine());
+        for (int i = 0; i < n; i++) {
+            String in = br.readLine();
+            String ip = br.readLine();
+            String[] ipParts = ip.split("\\.");
+            if(hashMap.containsKey(in)){
+                rt = hashMap.get(in);
+                for (int j = 0; j < rt.size(); j++) {
+                    String[] parts = rt.get(j).split("\\.");
+                    if(parts[0].equals(ipParts[0])&&parts[1].equals(ipParts[1]) &&
+                            parts[2].equals(ipParts[2]) && Integer.parseInt(ipParts[3])>=0
+                    && Integer.parseInt(ipParts[3])<=254){
+                        postoi = true;
+                    }
+                }
+            }
+            if(postoi){
+                System.out.println("postoi");
+            }else{
+                System.out.println("ne postoi");
+            }
+            postoi = false;
+        }
+    }
+}

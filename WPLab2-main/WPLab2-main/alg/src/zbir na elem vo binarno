@@ -1,0 +1,210 @@
+//package aud_z3;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+class BNode<E> {
+
+    public E info;
+    public BNode<E> left;
+    public BNode<E> right;
+
+    static int LEFT = 1;
+    static int RIGHT = 2;
+
+    public BNode(E info) {
+        this.info = info;
+        left = null;
+        right = null;
+    }
+
+    public BNode() {
+        this.info = null;
+        left = null;
+        right = null;
+    }
+
+    public BNode(E info, BNode<E> left, BNode<E> right) {
+        this.info = info;
+        this.left = left;
+        this.right = right;
+    }
+
+    @Override
+    public String toString() {
+        return "BNode{" +
+                "info=" + info;
+    }
+}
+
+class BTree<E extends Comparable<E>> {
+    private Map<E, BNode<E>> treeAsList;
+
+    public BNode<E> root;
+
+    public BTree() {
+        root = null;
+        treeAsList = new HashMap<>();
+    }
+
+    public BTree(E info) {
+        root = new BNode<E>(info);
+    }
+
+    public void makeRoot(E elem) {
+        root = new BNode(elem);
+    }
+
+    public void makeRootNode(BNode<E> node) {
+        root = node;
+    }
+
+    public BNode<E> addChild(BNode<E> node, int where, E elem) {
+
+        BNode<E> tmp = new BNode<E>(elem);
+
+        if (where == BNode.LEFT) {
+            if (node.left != null)  // veke postoi element
+                return null;
+            node.left = tmp;
+        } else {
+            if (node.right != null) // veke postoi element
+                return null;
+            node.right = tmp;
+        }
+
+        return tmp;
+    }
+
+    public BNode<E> addChildNode(BNode<E> node, int where, BNode<E> tmp) {
+
+        if (where == BNode.LEFT) {
+            if (node.left != null)  // veke postoi element
+                return null;
+            node.left = tmp;
+        } else {
+            if (node.right != null) // veke postoi element
+                return null;
+            node.right = tmp;
+        }
+
+        return tmp;
+    }
+
+    public int sumOfLeftSubtree(int value) {
+        BNode<E> tmp = treeAsList.get(value);
+        if(tmp == null){
+            return 0;
+        }else {
+            return sumOfLeftSubtreeR(tmp.left, tmp);
+        }
+    }
+
+    private int sumOfLeftSubtreeR(BNode<E> node, BNode<E> tmp) {
+        if(node == null)
+            return 0;
+
+        if(node.left == null&&node.right==null){
+            if(node.info.compareTo(tmp.info) <0)
+                return (Integer) node.info;
+        }else{
+            if (node.info.compareTo(tmp.info) <0){
+                return (Integer)node.info + sumOfLeftSubtreeR(node.left, tmp) + sumOfLeftSubtreeR(node.right, tmp);
+            }
+        }
+
+        return sumOfLeftSubtreeR(node.left, tmp) + sumOfLeftSubtreeR(node.right, tmp);
+    }
+
+    public void treeToList(BNode<E> node) {
+        if(node != null) {
+            treeToList(node.left);
+            treeToList(node.right);
+            treeAsList.put(node.info, node);
+        }
+
+    }
+
+
+
+    public int sumOfRightSubtree(int value) {
+        BNode<E> tmp = treeAsList.get(value);
+        if(tmp == null){
+            return 0;
+        }else {
+            return sumOfRightSubtreeR(tmp.right, tmp);
+        }
+    }
+
+    private int sumOfRightSubtreeR(BNode<E> node, BNode<E> tmp) {
+        if(node == null)
+            return 0;
+
+        if(node.left == null && node.right==null){
+            if(node.info.compareTo(tmp.info) >0)
+                return (Integer) node.info;
+        }else{
+            if (node.info.compareTo(tmp.info) >0){
+                return (Integer)node.info + sumOfRightSubtreeR(node.left, tmp) + sumOfRightSubtreeR(node.right, tmp);
+            }
+        }
+
+        return sumOfRightSubtreeR(node.left, tmp) + sumOfRightSubtreeR(node.right, tmp);
+    }
+
+}
+
+public class BinaryTreeSum {
+
+
+    public static void main(String[] args) throws Exception {
+        int i, j, k;
+        int index;
+        String action;
+
+        String line;
+        //File file = new File("D:\\FINKI\\drva\\src\\aud_z3\\qqq");
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+
+        int N = Integer.parseInt(br.readLine());
+
+        BNode<Integer> nodes[] = new BNode[N];
+        BTree<Integer> tree = new BTree<Integer>();
+
+        for (i=0;i<N;i++)
+            nodes[i] = new BNode<Integer>();
+
+        for (i = 0; i < N; i++) {
+            line = br.readLine();
+            st = new StringTokenizer(line);
+            index = Integer.parseInt(st.nextToken());
+            nodes[index].info = Integer.parseInt(st.nextToken());
+            action = st.nextToken();
+            if (action.equals("LEFT")) {
+                tree.addChildNode(nodes[Integer.parseInt(st.nextToken())], BNode.LEFT, nodes[index]);
+            } else if (action.equals("RIGHT")) {
+                tree.addChildNode(nodes[Integer.parseInt(st.nextToken())], BNode.RIGHT, nodes[index]);
+            } else {
+                // this node is the root
+                tree.makeRootNode(nodes[index]);
+            }
+        }
+
+        int baranaVrednost=Integer.parseInt(br.readLine());
+
+        tree.treeToList(tree.root);
+
+        br.close();
+        // vasiot kod ovde
+        System.out.printf("%d %d", tree.sumOfLeftSubtree(baranaVrednost),
+                tree.sumOfRightSubtree(baranaVrednost));
+
+    }
+}
